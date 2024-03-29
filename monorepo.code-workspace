@@ -1,6 +1,18 @@
 {
   "folders": [
     {
+      "name": "manager",
+      "path": "apps/manager/"
+    },
+    {
+      "name": "modrinth-api",
+      "path": "packages/modrinth-api/"
+    },
+    {
+      "name": "curseforge-api",
+      "path": "packages/curseforge-api/"
+    },
+    {
       "name": "monorepo",
       "path": "."
     }
@@ -23,7 +35,10 @@
       "**/node_modules": true
     },
     //
-    "editor.rulers": [80, 120],
+    "editor.rulers": [
+      80,
+      120
+    ],
     "files.eol": "\n",
     "files.trimTrailingWhitespace": true,
     "files.insertFinalNewline": true,
