@@ -16,7 +16,7 @@
     "@modern-js/plugin-bff": "2.48.4",
     "@modern-js/plugin-koa": "2.48.4",
     "@modern-js/runtime": "2.48.4",
-    "@modpack-manager/curseforge-api": "workspace:@modpack-manager/curseforge-api@*",
+    "@modpack-manager/curseforge-api": "workspace:@modpack-manager/curseforge-api@^0.9",
     "antd": "^5.15.4",
     "dotenv": "^16.4.5",
     "koa": "~2.15.2",

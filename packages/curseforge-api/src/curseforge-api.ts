@@ -31,17 +31,17 @@ class CurseForgeApi {
   /**
    * API地址
    */
-  baseURL: string;
+  private baseURL: string;
 
   /**
    * API_KEY
    */
-  apiKey: string;
+  private apiKey: string;
 
   /**
    * Axios
    */
-  axios: AxiosInstance;
+  private axios: AxiosInstance;
 
   constructor({ baseURL = BASE_URL, apiKey = '' }) {
     this.baseURL = baseURL;
