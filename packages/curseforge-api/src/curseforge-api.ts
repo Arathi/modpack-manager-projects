@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosHeaders } from 'axios';
 import type {
+  GetModFilesParams,
   GetModFilesRequestBody,
   GetModsByIdsListRequestBody,
   SearchModsParameters,
@@ -14,7 +15,6 @@ import type {
   MinecraftModLoaderIndex,
   MinecraftModLoaderVersion,
 } from './schema/responses';
-import { ModLoaderType } from './schema/common';
 import type Game from './schema/game';
 import type Category from './schema/category';
 import type Mod from './schema/mod';
@@ -47,6 +47,10 @@ class CurseForgeApi {
     this.baseURL = baseURL;
     this.apiKey = apiKey;
     this.axios = axios.create({});
+  }
+
+  setApiKey(apiKey: string) {
+    this.apiKey = apiKey;
   }
 
   // #region HTTP
@@ -165,77 +169,95 @@ class CurseForgeApi {
    * @param params 搜索条件
    * @returns 搜索结果（分页）
    */
-  async searchMods(params: SearchModsParameters) {
+  async searchMods({
+    gameId = GAME_ID_MINECRAFT,
+    classId = CLASS_ID_MODS,
+    categoryId,
+    categoryIds,
+    gameVersion,
+    gameVersions,
+    searchFilter,
+    sortField,
+    sortOrder,
+    modLoaderType,
+    modLoaderTypes,
+    gameVersionTypeId,
+    authorId,
+    primaryAuthorId,
+    slug,
+    index,
+    pageSize,
+  }: SearchModsParameters) {
     const uri = `/v1/mods/search`;
-    const query: QueryParams = {
-      gameId: params.gameId,
+    const params: QueryParams = {
+      gameId,
     };
 
-    if (params.classId !== undefined) {
-      query.classId = params.classId;
+    if (classId !== undefined) {
+      params.classId = classId;
     }
 
-    if (params.categoryId !== undefined) {
-      query.categoryId = params.categoryId;
+    if (categoryId !== undefined) {
+      params.categoryId = categoryId;
     }
 
-    if (params.categoryIds !== undefined) {
-      query.categoryIds = params.categoryIds;
+    if (categoryIds !== undefined) {
+      params.categoryIds = categoryIds;
     }
 
-    if (params.gameVersion !== undefined) {
-      query.gameVersion = params.gameVersion;
+    if (gameVersion !== undefined) {
+      params.gameVersion = gameVersion;
     }
 
-    if (params.gameVersions !== undefined) {
-      query.gameVersions = params.gameVersions;
+    if (gameVersions !== undefined) {
+      params.gameVersions = gameVersions;
     }
 
-    if (params.searchFilter !== undefined) {
-      query.searchFilter = params.searchFilter;
+    if (searchFilter !== undefined) {
+      params.searchFilter = searchFilter;
     }
 
-    if (params.sortField !== undefined) {
-      query.sortField = params.sortField;
+    if (sortField !== undefined) {
+      params.sortField = sortField;
     }
 
-    if (params.sortOrder !== undefined) {
-      query.sortOrder = params.sortOrder;
+    if (sortOrder !== undefined) {
+      params.sortOrder = sortOrder;
     }
 
-    if (params.modLoaderType !== undefined) {
-      query.modLoaderType = params.modLoaderType;
+    if (modLoaderType !== undefined) {
+      params.modLoaderType = modLoaderType;
     }
 
-    if (params.modLoaderTypes !== undefined) {
-      query.modLoaderTypes = params.modLoaderTypes;
+    if (modLoaderTypes !== undefined) {
+      params.modLoaderTypes = modLoaderTypes;
     }
 
-    if (params.gameVersionTypeId !== undefined) {
-      query.gameVersionTypeId = params.gameVersionTypeId;
+    if (gameVersionTypeId !== undefined) {
+      params.gameVersionTypeId = gameVersionTypeId;
     }
 
-    if (params.authorId !== undefined) {
-      query.authorId = params.authorId;
+    if (authorId !== undefined) {
+      params.authorId = authorId;
     }
 
-    if (params.primaryAuthorId !== undefined) {
-      query.primaryAuthorId = params.primaryAuthorId;
+    if (primaryAuthorId !== undefined) {
+      params.primaryAuthorId = primaryAuthorId;
     }
 
-    if (params.slug !== undefined) {
-      query.slug = params.slug;
+    if (slug !== undefined) {
+      params.slug = slug;
     }
 
-    if (params.index !== undefined) {
-      query.index = params.index;
+    if (index !== undefined) {
+      params.index = index;
     }
 
-    if (params.pageSize !== undefined) {
-      query.pageSize = params.pageSize;
+    if (pageSize !== undefined) {
+      params.pageSize = pageSize;
     }
 
-    return this.get<PaginationResponse<Mod>>(uri, query);
+    return this.get<PaginationResponse<Mod>>(uri, params);
   }
 
   /**
@@ -281,19 +303,29 @@ class CurseForgeApi {
   // #endregion
 
   // #region Files
+  /**
+   * 获取指定MOD文件
+   * @param modId MOD编号
+   * @param fileId 文件编号
+   * @returns MOD文件
+   */
   async getModFile(modId: number, fileId: number) {
     const uri = `/v1/mods/${modId}/files/${fileId}`;
     return this.get<DataResponse<File>>(uri);
   }
 
-  async getModFiles(
-    modId: number,
-    gameVersion?: string,
-    modLoaderType?: ModLoaderType,
-    gameVersionTypeId?: number,
-    index?: number,
-    pageSize?: number,
-  ) {
+  /**
+   * 获取指定MOD符合条件的文件
+   * @returns MOD文件列表
+   */
+  async getModFiles({
+    modId,
+    gameVersion,
+    modLoaderType,
+    gameVersionTypeId,
+    index,
+    pageSize,
+  }: GetModFilesParams) {
     const uri = `/v1/mods/${modId}/files`;
     return this.get<PaginationResponse<File>>(uri, {
       modId,
@@ -305,16 +337,32 @@ class CurseForgeApi {
     });
   }
 
+  /**
+   * 获取多个指定MOD文件
+   * @returns MOD文件列表
+   */
   async getFiles(body: GetModFilesRequestBody) {
     const uri = `/v1/mods/files`;
     return this.post<ListResponse<Mod>>(uri, body);
   }
 
+  /**
+   * 获取指定MOD文件的修改日志
+   * @param modId MOD编号
+   * @param fileId 文件编号
+   * @returns 修改日志
+   */
   async getModFileChangeLog(modId: number, fileId: number) {
     const uri = `/v1/mods/${modId}/files/${fileId}/changelog`;
     return this.get<DataResponse<string>>(uri);
   }
 
+  /**
+   * 获取指定MOD文件的下载地址
+   * @param modId MOD编号
+   * @param fileId 文件编号
+   * @returns 下载地址
+   */
   async getModFileDownloadURL(modId: number, fileId: number) {
     const uri = `/v1/mods/${modId}/files/${fileId}/download-url`;
     return this.get<DataResponse<string>>(uri);
@@ -322,6 +370,11 @@ class CurseForgeApi {
   // #endregion
 
   // #region Minecraft
+  /**
+   * 获取Minecraft版本列表
+   * @param sortDescending 是否倒序排列
+   * @returns Minecraft版本列表
+   */
   async getMinecraftVersions(sortDescending?: boolean) {
     const uri = `/v1/minecraft/version`;
     return this.get<ListResponse<MinecraftGameVersion>>(uri, {
@@ -329,11 +382,22 @@ class CurseForgeApi {
     });
   }
 
+  /**
+   * 获取指定Minecraft版本信息
+   * @param gameVersionString 版本号
+   * @returns Minecraft版本
+   */
   async getSpecificMinecraftVersion(gameVersionString: string) {
     const uri = `/v1/minecraft/version/${gameVersionString}`;
     return this.get<DataResponse<MinecraftGameVersion>>(uri);
   }
 
+  /**
+   * 获取模组加载器索引表
+   * @param version Minecraft版本
+   * @param includeAll 包含所有
+   * @returns 模组加载器索引表
+   */
   async getMinecraftModLoaders(version?: string, includeAll?: boolean) {
     const uri = `/v1/minecraft/modloader`;
     return this.get<ListResponse<MinecraftModLoaderIndex>>(uri, {
@@ -342,6 +406,11 @@ class CurseForgeApi {
     });
   }
 
+  /**
+   * 获取模组加载器信息
+   * @param modLoaderName 模组加载器名称
+   * @returns 模组加载器信息
+   */
   async getSpecificModLoaders(modLoaderName: string) {
     const uri = `/v1/minecraft/modloader/${modLoaderName}`;
     return this.get<DataResponse<MinecraftModLoaderVersion>>(uri);

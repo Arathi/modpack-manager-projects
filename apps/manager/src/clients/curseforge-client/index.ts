@@ -1,13 +1,21 @@
 import CurseForgeApi, {
   GAME_ID_MINECRAFT,
   CLASS_ID_MODS,
-  SearchModsParameters,
+  type SearchModsParameters,
+  ModLoaderType,
 } from '@modpack-manager/curseforge-api';
 
 import Category from '@/domains/category';
 import Mod from '@/domains/mod';
+import ModFile from '@/domains/mod-file';
+import { ModLoader } from '@/domains/mod-loader';
 import SearchResults from '@/domains/search-results';
-import { SearchModsConditions } from '@/domains/conditions';
+import type {
+  SearchModsConditions,
+  SearchModFilesConditions,
+} from '@/domains/conditions';
+
+const MAX_PAGE_SIZE = 50;
 
 class CurseForgeClient {
   api: CurseForgeApi;
@@ -17,8 +25,39 @@ class CurseForgeClient {
   }
 
   setApiKey(apiKey: string) {
-    this.api.apiKey = apiKey;
+    this.api.setApiKey(apiKey);
   }
+
+  // #region 转换规则
+  private toModLoaderType(
+    modLoader: ModLoader | undefined,
+  ): ModLoaderType | undefined {
+    if (modLoader === undefined) {
+      return undefined;
+    }
+
+    let modLoaderType: ModLoaderType | undefined;
+    switch (modLoader) {
+      case ModLoader.Forge:
+        modLoaderType = ModLoaderType.Forge;
+        break;
+      case ModLoader.Fabric:
+        modLoaderType = ModLoaderType.Fabric;
+        break;
+      case ModLoader.Quilt:
+        modLoaderType = ModLoaderType.Quilt;
+        break;
+      case ModLoader.NeoForge:
+        modLoaderType = ModLoaderType.NeoForge;
+        break;
+      default:
+        modLoaderType = undefined;
+        break;
+    }
+
+    return modLoaderType;
+  }
+  // #endregion
 
   async getCategories(): Promise<Category[]> {
     const resp = await this.api.getCategories(GAME_ID_MINECRAFT);
@@ -39,13 +78,53 @@ class CurseForgeClient {
     return categories;
   }
 
-  async searchMods(
-    conditions: SearchModsConditions = {},
-  ): Promise<SearchResults<Mod>> {
-    console.info(`开始搜索MOD：`, conditions);
+  async searchMods({
+    categories,
+    gameVersions,
+    keywords,
+    modLoaders,
+    slug,
+    index = 0,
+    pageSize = MAX_PAGE_SIZE,
+  }: SearchModsConditions): Promise<SearchResults<Mod>> {
     const params: SearchModsParameters = {
       gameId: GAME_ID_MINECRAFT,
+      classId: CLASS_ID_MODS,
+      searchFilter: keywords,
+      slug,
+      index,
+      pageSize,
     };
+
+    // categoryId / categoryIds
+    if (categories !== undefined) {
+      if (categories.length === 1) {
+        params.categoryId = categories[0];
+      } else if (categories.length > 1) {
+        params.categoryIds = categories.join(',');
+      }
+    }
+
+    // gameVersion / gameVersions
+    if (gameVersions !== undefined) {
+      if (gameVersions.length === 1) {
+        params.gameVersion = gameVersions[0];
+      } else if (gameVersions.length > 1) {
+        params.gameVersions = gameVersions.join(',');
+      }
+    }
+
+    // modLoaderType / modLoaderTypes
+    if (modLoaders !== undefined) {
+      if (modLoaders.length === 1) {
+        params.modLoaderType = this.toModLoaderType(modLoaders[0]);
+      } else if (modLoaders.length > 1) {
+        params.modLoaderTypes = modLoaders
+          .map(ldr => this.toModLoaderType(ldr))
+          .join(',');
+      }
+    }
+
     const resp = await this.api.searchMods(params);
 
     const mods = resp.data.map(mod => ({
@@ -105,6 +184,65 @@ class CurseForgeClient {
       id: mod.id,
       slug: mod.slug,
       name: mod.name,
+    };
+  }
+
+  async getModFile(
+    modId: number | string,
+    fileId: number | string,
+  ): Promise<ModFile> {
+    if (typeof modId === 'string') {
+      throw new Error(`modId类型错误`);
+    }
+
+    if (typeof fileId === 'string') {
+      throw new Error(`fileId类型错误`);
+    }
+
+    const resp = await this.api.getModFile(modId, fileId);
+    const file = resp.data;
+    return {
+      id: fileId,
+      modId,
+      name: file.fileName,
+      url: file.downloadUrl,
+    };
+  }
+
+  async searchModFiles({
+    modId,
+    gameVersion,
+    modLoader,
+    index = 0,
+    pageSize = MAX_PAGE_SIZE,
+  }: SearchModFilesConditions): Promise<SearchResults<ModFile>> {
+    if (typeof modId === 'string') {
+      throw new Error(`modId类型错误`);
+    }
+    const modLoaderType = this.toModLoaderType(modLoader);
+
+    const resp = await this.api.getModFiles({
+      modId,
+      gameVersion,
+      modLoaderType,
+      index,
+      pageSize,
+    });
+    const { data, pagination } = resp;
+    const results: ModFile[] = data.map(file => ({
+      id: file.id,
+      modId: file.modId,
+      name: file.fileName,
+      url: file.downloadUrl,
+    }));
+    return {
+      results,
+      pagination: {
+        index: pagination.index,
+        pageSize: pagination.pageSize,
+        amount: pagination.resultCount,
+        total: pagination.totalCount,
+      },
     };
   }
 }

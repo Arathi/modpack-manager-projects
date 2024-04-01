@@ -51,6 +51,15 @@ export interface GetFeaturedModsRequestBody {
 // #endregion
 
 // #region Files
+export interface GetModFilesParams {
+  modId: number;
+  gameVersion?: string;
+  modLoaderType?: ModLoaderType;
+  gameVersionTypeId?: number;
+  index?: number;
+  pageSize?: number;
+}
+
 export interface GetModFilesRequestBody {
   fileIds: number[];
 }

@@ -5,7 +5,7 @@ import CurseForgeApi, {
 } from '@/curseforge-api';
 import { ModLoaderType } from '@/schema';
 
-const API_KEY = process.env.CURSEFORGE_API_KEY;
+const API_KEY = process.env.API_KEY ?? '';
 
 describe('CurseForge API 测试', () => {
   const api = new CurseForgeApi({ apiKey: API_KEY });
@@ -13,14 +13,12 @@ describe('CurseForge API 测试', () => {
   // #region Game
   test('Get Game', async () => {
     const resp = await api.getGame();
-    // console.info(`获取游戏信息，响应报文如下：`, resp);
     const game = resp.data;
     expect(game.name).toBe('Minecraft');
   });
 
   test('Get Versions', async () => {
     const resp = await api.getVersions();
-    // console.info(`获取版本信息，响应报文如下：`, resp);
     const versions = resp.data;
     const mc120x = versions.find(mv => mv.versions.find(v => v === '1.20.1'));
     expect(mc120x?.type).toBe(75125);
@@ -28,7 +26,6 @@ describe('CurseForge API 测试', () => {
 
   test('Get Version Types', async () => {
     const resp = await api.getVersionTypes();
-    // console.info(`获取版本类型，响应报文如下：`, resp);
     const versionTypes = resp.data;
     const mc120x = versionTypes.find(vt => vt.name === 'Minecraft 1.20');
     expect(mc120x?.id).toBe(75125);
@@ -38,7 +35,6 @@ describe('CurseForge API 测试', () => {
   // #region Categories
   test('Get Categories', async () => {
     const resp = await api.getCategories();
-    // console.info(`获取分类，响应报文如下：`, resp);
     const categories = resp.data;
     const libraryApi = categories.find(cat => cat.slug === 'library-api');
     expect(libraryApi?.id).toBe(421);
@@ -97,7 +93,11 @@ describe('CurseForge API 测试', () => {
   });
 
   test('Get Mod Files', async () => {
-    const resp = await api.getModFiles(238222, '1.20.1', ModLoaderType.Forge);
+    const resp = await api.getModFiles({
+      modId: 238222,
+      gameVersion: '1.20.1',
+      modLoaderType: ModLoaderType.Forge,
+    });
     const files = resp.data;
     const jei15304 = files.find(
       f => f.fileName === 'jei-1.20.1-forge-15.3.0.4.jar',

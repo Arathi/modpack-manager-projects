@@ -9,3 +9,11 @@ export interface SearchModsConditions {
   index?: number;
   pageSize?: number;
 }
+
+export interface SearchModFilesConditions {
+  modId: number;
+  gameVersion?: string;
+  modLoader?: ModLoader;
+  index?: number;
+  pageSize?: number;
+}

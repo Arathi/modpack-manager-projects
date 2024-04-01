@@ -45,7 +45,7 @@ importers:
         specifier: 2.48.4
         version: 2.48.4(@types/react-dom@18.0.11)(@types/react@18.0.38)(react-dom@18.2.0)(react@18.2.0)(webpack@5.91.0)
       '@modpack-manager/curseforge-api':
-        specifier: workspace:@modpack-manager/curseforge-api@*
+        specifier: workspace:@modpack-manager/curseforge-api@^0.9
         version: link:../../packages/curseforge-api
       antd:
         specifier: ^5.15.4
