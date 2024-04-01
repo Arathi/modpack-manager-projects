@@ -1,5 +1,6 @@
 import { ModLoaderType } from './common';
 
+// #region Mods
 export interface SearchModsParameters {
   gameId: number;
   classId?: number;
@@ -15,7 +16,7 @@ export interface SearchModsParameters {
   gameVersionTypeId?: number;
   authorId?: number;
   primaryAuthorId?: number;
-  slug?: number;
+  slug?: string;
   index?: number;
   pageSize?: number;
 }
@@ -37,10 +38,6 @@ export enum ModsSearchSortField {
 
 export type SortOrder = 'asc' | 'desc';
 
-export interface GetModFilesRequestBody {
-  fileIds: number[];
-}
-
 export interface GetModsByIdsListRequestBody {
   modIds: number[];
   filterPcOnly?: boolean;
@@ -51,3 +48,10 @@ export interface GetFeaturedModsRequestBody {
   excludedModIds: number[];
   gameVersionTypeId?: number;
 }
+// #endregion
+
+// #region Files
+export interface GetModFilesRequestBody {
+  fileIds: number[];
+}
+// #endregion

@@ -1,4 +1,9 @@
-import CurseForgeApi from './curseforge-api';
+import CurseForgeApi, {
+  BASE_URL,
+  GAME_ID_MINECRAFT,
+  CLASS_ID_MODS,
+} from './curseforge-api';
 
-export { CurseForgeApi };
+export default CurseForgeApi;
+export { BASE_URL, GAME_ID_MINECRAFT, CLASS_ID_MODS };
 export * from './schema';
