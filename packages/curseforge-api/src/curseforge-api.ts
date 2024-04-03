@@ -1,9 +1,12 @@
 import axios, { AxiosInstance, AxiosHeaders } from 'axios';
 import type {
+  GetCategoriesParams,
   GetModFilesParams,
   GetModFilesRequestBody,
   GetModsByIdsListRequestBody,
   SearchModsParameters,
+  GetModDescriptionParams,
+  GetMinecraftModLoadersParams,
 } from './schema/requests';
 import type {
   DataResponse,
@@ -23,9 +26,6 @@ import type File from './schema/file';
 export const BASE_URL = 'https://api.curseforge.com';
 export const GAME_ID_MINECRAFT = 432;
 export const CLASS_ID_MODS = 6;
-
-type QueryParamValue = string | number | boolean | undefined;
-type QueryParams = Record<string, QueryParamValue>;
 
 class CurseForgeApi {
   /**
@@ -69,20 +69,12 @@ class CurseForgeApi {
    * @param params Query参数
    * @returns 响应报文
    */
-  private async get<R>(uri: string, params?: QueryParams): Promise<R> {
+  private async get<R>(uri: string, params?: any): Promise<R> {
     const url = new URL(`${this.baseURL}${uri}`);
-    if (params !== undefined) {
-      const keys = Object.keys(params);
-      keys.forEach(key => {
-        const value = params[key];
-        if (value !== undefined) {
-          url.searchParams.append(key, `${value}`);
-        }
-      });
-    }
     console.debug(`发起GET请求：${url}`);
     const resp = await this.axios.get<R>(url.toString(), {
       headers: this.headers,
+      params,
     });
     if (resp.status !== 200) {
       throw new Error(`HTTP请求失败，返回状态码：${resp.status}`);
@@ -149,11 +141,11 @@ class CurseForgeApi {
    * @param classesOnly 只列出主分类
    * @returns 分类列表
    */
-  async getCategories(
+  async getCategories({
     gameId = GAME_ID_MINECRAFT,
     classId = CLASS_ID_MODS,
     classesOnly = false,
-  ) {
+  }: GetCategoriesParams) {
     const uri = `/v1/categories`;
     return this.get<ListResponse<Category>>(uri, {
       gameId,
@@ -189,75 +181,26 @@ class CurseForgeApi {
     pageSize,
   }: SearchModsParameters) {
     const uri = `/v1/mods/search`;
-    const params: QueryParams = {
+
+    return this.get<PaginationResponse<Mod>>(uri, {
       gameId,
-    };
-
-    if (classId !== undefined) {
-      params.classId = classId;
-    }
-
-    if (categoryId !== undefined) {
-      params.categoryId = categoryId;
-    }
-
-    if (categoryIds !== undefined) {
-      params.categoryIds = categoryIds;
-    }
-
-    if (gameVersion !== undefined) {
-      params.gameVersion = gameVersion;
-    }
-
-    if (gameVersions !== undefined) {
-      params.gameVersions = gameVersions;
-    }
-
-    if (searchFilter !== undefined) {
-      params.searchFilter = searchFilter;
-    }
-
-    if (sortField !== undefined) {
-      params.sortField = sortField;
-    }
-
-    if (sortOrder !== undefined) {
-      params.sortOrder = sortOrder;
-    }
-
-    if (modLoaderType !== undefined) {
-      params.modLoaderType = modLoaderType;
-    }
-
-    if (modLoaderTypes !== undefined) {
-      params.modLoaderTypes = modLoaderTypes;
-    }
-
-    if (gameVersionTypeId !== undefined) {
-      params.gameVersionTypeId = gameVersionTypeId;
-    }
-
-    if (authorId !== undefined) {
-      params.authorId = authorId;
-    }
-
-    if (primaryAuthorId !== undefined) {
-      params.primaryAuthorId = primaryAuthorId;
-    }
-
-    if (slug !== undefined) {
-      params.slug = slug;
-    }
-
-    if (index !== undefined) {
-      params.index = index;
-    }
-
-    if (pageSize !== undefined) {
-      params.pageSize = pageSize;
-    }
-
-    return this.get<PaginationResponse<Mod>>(uri, params);
+      classId,
+      categoryId,
+      categoryIds,
+      gameVersion,
+      gameVersions,
+      searchFilter,
+      sortField,
+      sortOrder,
+      modLoaderType,
+      modLoaderTypes,
+      gameVersionTypeId,
+      authorId,
+      primaryAuthorId,
+      slug,
+      index,
+      pageSize,
+    });
   }
 
   /**
@@ -289,9 +232,7 @@ class CurseForgeApi {
    */
   async getModDescription(
     modId: number,
-    raw?: boolean,
-    stripped?: boolean,
-    markup?: boolean,
+    { raw, stripped, markup }: GetModDescriptionParams,
   ): Promise<DataResponse<string>> {
     const uri = `/v1/mods/${modId}/description`;
     return this.get<DataResponse<string>>(uri, {
@@ -318,17 +259,18 @@ class CurseForgeApi {
    * 获取指定MOD符合条件的文件
    * @returns MOD文件列表
    */
-  async getModFiles({
-    modId,
-    gameVersion,
-    modLoaderType,
-    gameVersionTypeId,
-    index,
-    pageSize,
-  }: GetModFilesParams) {
+  async getModFiles(
+    modId: number,
+    {
+      gameVersion,
+      modLoaderType,
+      gameVersionTypeId,
+      index,
+      pageSize,
+    }: GetModFilesParams,
+  ) {
     const uri = `/v1/mods/${modId}/files`;
     return this.get<PaginationResponse<File>>(uri, {
-      modId,
       gameVersion,
       modLoaderType,
       gameVersionTypeId,
@@ -398,7 +340,10 @@ class CurseForgeApi {
    * @param includeAll 包含所有
    * @returns 模组加载器索引表
    */
-  async getMinecraftModLoaders(version?: string, includeAll?: boolean) {
+  async getMinecraftModLoaders({
+    version,
+    includeAll,
+  }: GetMinecraftModLoadersParams) {
     const uri = `/v1/minecraft/modloader`;
     return this.get<ListResponse<MinecraftModLoaderIndex>>(uri, {
       version,

@@ -2,7 +2,7 @@ import 'dotenv/config';
 import CurseForgeApi, {
   CLASS_ID_MODS,
   GAME_ID_MINECRAFT,
-} from '@/curseforge-api';
+} from './curseforge-api';
 import { ModLoaderType } from '@/schema';
 
 const API_KEY = process.env.API_KEY ?? '';
@@ -34,7 +34,7 @@ describe('CurseForge API 测试', () => {
 
   // #region Categories
   test('Get Categories', async () => {
-    const resp = await api.getCategories();
+    const resp = await api.getCategories({});
     const categories = resp.data;
     const libraryApi = categories.find(cat => cat.slug === 'library-api');
     expect(libraryApi?.id).toBe(421);
@@ -93,8 +93,7 @@ describe('CurseForge API 测试', () => {
   });
 
   test('Get Mod Files', async () => {
-    const resp = await api.getModFiles({
-      modId: 238222,
+    const resp = await api.getModFiles(238222, {
       gameVersion: '1.20.1',
       modLoaderType: ModLoaderType.Forge,
     });

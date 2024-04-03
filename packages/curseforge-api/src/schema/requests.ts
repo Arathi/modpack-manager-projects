@@ -1,8 +1,16 @@
 import { ModLoaderType } from './common';
 
+// #region Categories
+export interface GetCategoriesParams {
+  gameId?: number;
+  classId?: number;
+  classesOnly?: boolean;
+}
+// #endregion
+
 // #region Mods
 export interface SearchModsParameters {
-  gameId: number;
+  gameId?: number;
   classId?: number;
   categoryId?: number;
   categoryIds?: string;
@@ -48,11 +56,16 @@ export interface GetFeaturedModsRequestBody {
   excludedModIds: number[];
   gameVersionTypeId?: number;
 }
+
+export interface GetModDescriptionParams {
+  raw?: boolean;
+  stripped?: boolean;
+  markup?: boolean;
+}
 // #endregion
 
 // #region Files
 export interface GetModFilesParams {
-  modId: number;
   gameVersion?: string;
   modLoaderType?: ModLoaderType;
   gameVersionTypeId?: number;
@@ -62,5 +75,12 @@ export interface GetModFilesParams {
 
 export interface GetModFilesRequestBody {
   fileIds: number[];
+}
+// #endregion
+
+// #region Minecraft
+export interface GetMinecraftModLoadersParams {
+  version?: string;
+  includeAll?: boolean;
 }
 // #endregion
