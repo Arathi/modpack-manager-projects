@@ -60,7 +60,7 @@ class CurseForgeClient {
   // #endregion
 
   async getCategories(): Promise<Category[]> {
-    const resp = await this.api.getCategories(GAME_ID_MINECRAFT);
+    const resp = await this.api.getCategories({});
     const categories: Category[] = [];
     resp.data.forEach(cat => {
       const parent =
@@ -221,8 +221,7 @@ class CurseForgeClient {
     }
     const modLoaderType = this.toModLoaderType(modLoader);
 
-    const resp = await this.api.getModFiles({
-      modId,
+    const resp = await this.api.getModFiles(modId, {
       gameVersion,
       modLoaderType,
       index,

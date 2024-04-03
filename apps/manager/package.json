@@ -9,14 +9,15 @@
     "serve": "modern serve",
     "new": "modern new",
     "lint": "modern lint",
-    "upgrade": "modern upgrade"
+    "upgrade": "modern upgrade",
+    "test": "modern test"
   },
   "dependencies": {
     "@ant-design/icons": "^5.3.5",
     "@modern-js/plugin-bff": "2.48.4",
     "@modern-js/plugin-koa": "2.48.4",
     "@modern-js/runtime": "2.48.4",
-    "@modpack-manager/curseforge-api": "workspace:@modpack-manager/curseforge-api@^0.9",
+    "@modpack-manager/curseforge-api": "workspace:@modpack-manager/curseforge-api@*",
     "antd": "^5.15.4",
     "dotenv": "^16.4.5",
     "koa": "~2.15.2",
@@ -38,8 +39,9 @@
     "prettier": "~2.8.1",
     "rimraf": "~3.0.2",
     "sass": "^1.72.0",
-    "ts-node": "~10.8.1",
-    "tsconfig-paths": "~3.14.1",
-    "typescript": "~5.0.4"
+    "ts-node": "~10.9.1",
+    "tsconfig-paths": "~4.1.2",
+    "typescript": "~5.0.4",
+    "@modern-js/plugin-testing": "2.48.4"
   }
 }

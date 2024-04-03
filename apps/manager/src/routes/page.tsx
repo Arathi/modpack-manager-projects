@@ -32,7 +32,7 @@ const Index = () => {
   }
 
   function getCategories() {
-    api.getCategories().then(resp => {
+    api.getCategories({}).then(resp => {
       console.info(`Get Categories: `, resp);
     });
   }
