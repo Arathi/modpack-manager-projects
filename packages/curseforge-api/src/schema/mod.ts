@@ -1,7 +1,7 @@
 import Category from './category';
 import File, { FileIndex } from './file';
 
-interface Mod {
+export default interface Mod {
   id: number;
   gameId: number;
   name: string;
@@ -31,14 +31,14 @@ interface Mod {
   rating?: number;
 }
 
-export interface ModLinks {
+interface ModLinks {
   websiteUrl: string;
   wikiUrl: string;
   issuesUrl: string;
   sourceUrl: string;
 }
 
-export enum ModStatus {
+enum ModStatus {
   New = 1,
   ChangesRequired = 2,
   UnderSoftReview = 3,
@@ -51,13 +51,13 @@ export enum ModStatus {
   UnderReview = 10,
 }
 
-export interface ModAuthor {
+interface ModAuthor {
   id: number;
   name: string;
   url: string;
 }
 
-export interface ModAsset {
+interface ModAsset {
   id: number;
   modId: number;
   title: string;
@@ -65,5 +65,3 @@ export interface ModAsset {
   thumbnailUrl: string;
   url: string;
 }
-
-export default Mod;

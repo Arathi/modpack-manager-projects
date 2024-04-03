@@ -1,6 +1,6 @@
 import { ModLoaderType } from './common';
 
-interface File {
+export default interface File {
   id: number;
   gameId: number;
   modId: number;
@@ -29,7 +29,7 @@ interface File {
   modules: FileModule[];
 }
 
-export enum FileStatus {
+enum FileStatus {
   Processing = 1,
   ChangesRequired = 2,
   UnderReview = 3,
@@ -47,7 +47,7 @@ export enum FileStatus {
   FailedPublishing = 15,
 }
 
-export interface FileHash {
+interface FileHash {
   value: string;
   algo: HashAlgo;
 }
@@ -57,7 +57,7 @@ export enum HashAlgo {
   Md5 = 2,
 }
 
-export interface SortableGameVersion {
+interface SortableGameVersion {
   gameVersionName: string;
   gameVersionPadded: string;
   gameVersion: string;
@@ -79,7 +79,7 @@ export enum FileRelationType {
   Include = 6,
 }
 
-export interface FileModule {
+interface FileModule {
   name: string;
   fingerprint: bigint;
 }
@@ -93,10 +93,8 @@ export interface FileIndex {
   modLoader: ModLoaderType;
 }
 
-export enum FileReleaseType {
+enum FileReleaseType {
   Release = 1,
   Beta = 2,
   Alpha = 3,
 }
-
-export default File;

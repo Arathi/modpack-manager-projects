@@ -8,13 +8,13 @@ export default interface Game {
   apiStatus: CoreApiStatus;
 }
 
-export interface GameAssets {
+interface GameAssets {
   iconUrl: string;
   titleUrl: string;
   coverUrl: string;
 }
 
-export enum CoreStatus {
+enum CoreStatus {
   Draft = 1,
   Test = 2,
   PendingReview = 3,
@@ -23,7 +23,7 @@ export enum CoreStatus {
   Live = 6,
 }
 
-export enum CoreApiStatus {
+enum CoreApiStatus {
   Private = 1,
   Public = 2,
 }

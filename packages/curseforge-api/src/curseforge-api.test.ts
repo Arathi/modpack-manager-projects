@@ -6,11 +6,10 @@ import CurseForgeApi, {
 import { ModLoaderType } from '@/schema';
 
 const API_KEY = process.env.API_KEY ?? '';
+const api = new CurseForgeApi({ apiKey: API_KEY });
 
-describe('CurseForge API 测试', () => {
-  const api = new CurseForgeApi({ apiKey: API_KEY });
-
-  // #region Game
+// #region Games
+describe('Games', () => {
   test('Get Game', async () => {
     const resp = await api.getGame();
     const game = resp.data;
@@ -30,18 +29,22 @@ describe('CurseForge API 测试', () => {
     const mc120x = versionTypes.find(vt => vt.name === 'Minecraft 1.20');
     expect(mc120x?.id).toBe(75125);
   });
-  // #endregion
+});
+// #endregion
 
-  // #region Categories
+// #region Categories
+describe('Categories', () => {
   test('Get Categories', async () => {
     const resp = await api.getCategories({});
     const categories = resp.data;
     const libraryApi = categories.find(cat => cat.slug === 'library-api');
     expect(libraryApi?.id).toBe(421);
   });
-  // #endregion
+});
+// #endregion
 
-  // #region Mods
+// #region Mods
+describe('Mods', () => {
   test('Search Mods', async () => {
     const resp = await api.searchMods({
       gameId: GAME_ID_MINECRAFT,
@@ -80,9 +83,11 @@ describe('CurseForge API 测试', () => {
       'Adds some useful information about food/hunger to the HUD',
     );
   });
-  // #endregion
+});
+// #endregion
 
-  // #region Files
+// #region Files
+describe('Files', () => {
   test('Get Mod File', async () => {
     const resp = await api.getModFile(238222, 5101366);
     const file = resp.data;
@@ -103,9 +108,11 @@ describe('CurseForge API 测试', () => {
     );
     expect(jei15304?.id).toBe(5101366);
   });
-  // #endregion
+});
+// #endregion
 
-  // #region Minecraft
+// #region Minecraft
+describe('Minecraft', () => {
   test('Get Minecraft Versions', async () => {
     const resp = await api.getMinecraftVersions();
     const versions = resp.data;
@@ -122,5 +129,5 @@ describe('CurseForge API 测试', () => {
     expect(mc1201?.gameVersionId).toBe(9990);
     expect(mc1201?.gameVersionTypeId).toBe(75125);
   });
-  // #endregion
 });
+// #endregion
