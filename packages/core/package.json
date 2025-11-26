@@ -1,0 +1,32 @@
+{
+  "name": "@arathi-mcps/core",
+  "version": "0.2511.0-dev",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rslib build",
+    "dev": "rslib build --watch",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@arathi-mcps/curseforge-api": "workspace:*"
+  },
+  "devDependencies": {
+    "@rslib/core": "^0.18.2",
+    "@types/node": "^22.19.1",
+    "axios": "^1.13.2",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.14"
+  }
+}
