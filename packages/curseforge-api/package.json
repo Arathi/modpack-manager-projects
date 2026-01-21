@@ -1,0 +1,29 @@
+{
+  "name": "@amcs/curseforge-api",
+  "version": "0.2601.0-dev",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rslib build",
+    "dev": "rslib build --watch",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@rslib/core": "^0.19.2",
+    "@types/node": "^24.10.7",
+    "typescript": "^5.9.3",
+    "undici": "^7.18.2",
+    "vitest": "^4.0.16"
+  }
+}
