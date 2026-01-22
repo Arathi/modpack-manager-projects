@@ -9,10 +9,10 @@
     "preview": "rsbuild preview"
   },
   "dependencies": {
+    "@amcs/curseforge-api": "workspace:",
+    "@amcs/modrinth-api": "workspace:^",
     "@ant-design/icons": "catalog:",
     "@redux-devtools/extension": "^3.3.0",
-    "@amcs/curseforge-api": "workspace:",
-    "@amcs/modrinth-api": "workspace:",
     "antd": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",

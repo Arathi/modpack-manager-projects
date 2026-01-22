@@ -1,5 +1,6 @@
-import { Category } from "./schemas/category";
-import { SearchProjectsResponse } from "./schemas/responses";
+import type { Category } from "./schemas/category";
+import { SearchProjectsParameters } from "./schemas/requests";
+import type { SearchProjectsResponse } from "./schemas/responses";
 
 export const DEFAULT_BASE_URL = "https://api.modrinth.com/v2";
 
@@ -22,16 +23,29 @@ export abstract class AbstractClient {
     return this.get(uri);
   }
 
-  searchProjects(
-    query: string,
-    facets: string,
-    index: string,
-    offset: number,
-    limit: number,
-  ): Promise<SearchProjectsResponse> {
-    const uri = "";
-    const params = {};
-    return this.get(uri, params);
+  searchProjects({
+    query,
+    facets,
+    index,
+    offset,
+    limit,
+  }: SearchProjectsParameters): Promise<SearchProjectsResponse> {
+    const uri = "/search";
+    let merged: string | undefined;
+    if (facets !== undefined) {
+      if (typeof facets === "string") {
+        merged = facets;
+      } else {
+        merged = JSON.stringify(facets);
+      }
+    }
+    return this.get(uri, {
+      query,
+      facets: merged,
+      index,
+      offset,
+      limit,
+    });
   }
 
   projectVersions(idSlug: string) {

@@ -1,5 +1,6 @@
 import { Client, formatCategory } from "@amcs/modrinth-api";
 
+import type { Category } from "@/domains/category";
 import type { Mod } from "@/domains/mod";
 import type { ModFile } from "@/domains/mod-file";
 
@@ -10,7 +11,8 @@ import {
   type SearchConditions,
   type SearchResults,
 } from "./client-adapter";
-import type { Category } from "@/domains/category";
+import { Environment } from "@/domains/environment";
+import { Source } from "@/domains/source";
 
 export class ModrinthAdapter extends ClientAdapter {
   client: Client;
@@ -43,12 +45,70 @@ export class ModrinthAdapter extends ClientAdapter {
     conditions: SearchConditions,
     pagination: Pagination,
   ): Promise<SearchResults<Mod>> {
+    const sortingMethod = undefined;
+
+    const facets = [["project_type:mod"]];
+
+    const categories: string[][] = conditions.categories.map((slug) => [
+      `categories:${slug}`,
+    ]);
+    if (categories.length > 0) {
+      facets.push(...categories);
+    }
+
+    const versions: string[] = conditions.versions.map((v) => `versions:${v}`);
+    if (versions.length > 0) {
+      facets.push(versions);
+    }
+
+    const loaders: string[] = conditions.loaders.map((l) => `categories:${l}`);
+    if (loaders.length > 0) {
+      facets.push(loaders);
+    }
+
+    for (const env of conditions.environments) {
+      switch (env) {
+        case Environment.Server:
+          facets.push(["server_side:required"]);
+          break;
+        case Environment.Client:
+          facets.push(["client_side:required"]);
+          break;
+      }
+    }
+
+    console.info(`facets = `, JSON.stringify(facets));
+
+    const res = await this.client.searchProjects({
+      query: conditions.keyword,
+      facets,
+      index: sortingMethod,
+      offset: (pagination.current - 1) * pagination.pageSize,
+      limit: pagination.pageSize,
+    });
+    console.info("Modrinth搜索结果如下：", res);
+
+    const mods = res.hits.map((it) => {
+      return {
+        source: Source.Modrinth,
+        id: it.project_id,
+        name: it.title,
+        author: {
+          id: it.author,
+          name: it.author,
+          url: "",
+        },
+        logo: it.icon_url,
+        description: it.description,
+      } satisfies Mod;
+    });
+
     return {
-      data: [],
+      data: mods,
       pagination: {
-        current: 1,
+        current: Math.ceil((res.offset + 1) / res.limit),
         pageSize: pagination.pageSize,
-        total: 0,
+        total: res.total_hits,
       },
     };
   }
